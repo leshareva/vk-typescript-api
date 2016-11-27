@@ -2,9 +2,61 @@ var VK = {};
 
 var methods = /*METHODS_JSON*/;
 
+function checkRanges(param, defines)
+    {
+    if(defines.minimum && param < defines.minimum)
+        {
+        throw "expected value >= "+defines.minimum+", given ["+param+"]";
+        }
+    if(defines.maximum && param > defines.maximum)
+        {
+        throw "expected value <= "+defines.maximum+", given ["+param+"]";
+        }
+    }
+
+function checkInt(param, defines)
+    {
+    if(Number(param) !== param || param % 1 !== 0)
+        {
+        throw "expected integer, given ["+param+"]";
+        }
+    checkRanges(param, defines);
+    }
+
+function checkFloat(param, defines)
+    {
+    if(Number(param) !== param)
+        {
+        throw "expected float number, given ["+param+"]";
+        }
+    checkRanges(param, defines);
+    }
+
+function checkString(param, defines)
+    {
+    if(typeof param !== 'string' && !(param instanceof String))
+        {
+        throw "expected string, given ["+param+"]";
+        }
+    }
+
+function checkEnum(param, defines)
+    {
+    if(!defines.enum) { return; }
+    if(!defines.enum[param])
+        {
+        throw "param can only equals one of values: "+
+        JSON.stringify(defines.enum)+
+        ", given ["+param+"]";
+        }
+    }
+
 function checkParam(param, defines)
     {
-    
+    if(defines.type === "integer") { checkInt(param, defines); }
+    if(defines.type === "number") { checkFloat(param, defines); }
+    if(defines.type === "string") { checkString(param, defines); }
+    checkEnum(param, defines);
     }
 
 function checkParams(params, method)
