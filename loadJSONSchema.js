@@ -46,11 +46,39 @@ function loadFileList(names, callback, allcontent)
 
 loadFileList(["methods.json", "objects.json", "responses.json"], generateTypescript);
 
+function getParamType(schemaType)
+    {
+    if(schemaType === "number") { return "number"; }
+    if(schemaType === "integer") { return "number"; }
+    if(schemaType === "string") { return "string"; }
+    if(schemaType === "array") { return "string"; /* TODO "Array<any>" */;  }
+    if(schemaType === "boolean") { return "0 | 1"; }
+    console.log("cannot find type for "+schemaType);
+    return "any";
+    }
+
+function parseParams(params)
+    {
+    if(!params) { return "params: any"; }
+    var paramsTS = [];
+    for(var param of params)
+        {
+        var reqSym = "?";
+        if(param.required) { reqSym = ""; }
+        paramsTS.push(
+            param.name+
+            reqSym+
+            ": "+
+            getParamType(param.type));
+        }
+    return "params: {\n\t"+paramsTS.join(",\n\t")+"\n\t}";
+    }
+
 function generateMethod(method)
     {
     var methodTS = "";
     var newName = method.name.replace(".", "_");
-    var params = "params: any";
+    var params = parseParams(method.parameters);
     return newName+" ("+params+", callback?: Function): void;";
     }
 
@@ -64,12 +92,31 @@ function generateAllMethods(methodsSchema)
     return allmethods.join("\n");
     }
 
-function writeMethodsInTSFile(filename, pointer, methods)
+function replaceInFile(filein, fileout, pointer, replaceData)
     {
-    var tsTemplate = fs.readFileSync(filename, 'utf8');
-    var generated = tsTemplate.replace(pointer, methods);
-    console.log(generated);
-    fs.writeFileSync("vk.d.ts", generated);
+    var template = fs.readFileSync(filein, 'utf8');
+    var generated = template.replace(pointer, replaceData);
+    fs.writeFileSync(fileout, generated);
+    }
+
+function writeMethodsInTSFile(methods)
+    {
+    replaceInFile("vk.d.tstempl", "vk.d.ts", "/*ALL_METHODS*/", methods);
+    }
+
+function writeDynamicLoadMethods(methods)
+    {
+    replaceInFile("add_methods.jstempl", "add_methods.js", "/*METHODS_LIST*/", methods);
+    }
+
+function getMethodsList(methods)
+    {
+    var allMethods = [];
+    for(var method of methods)
+        {
+        allMethods.push("\""+method.name+"\"");
+        }
+    return allMethods.join(", ");
     }
 
 function generateTypescript(files)
@@ -82,6 +129,7 @@ function generateTypescript(files)
     var methodsFileSchema = JSON.parse(files["methods.json"]);
     var methodsSchema = methodsFileSchema.methods;
     var methodsTS = generateAllMethods(methodsSchema);
-    writeMethodsInTSFile("vk.d.tstempl", "/*ALL_METHODS*/", methodsTS);
+    writeMethodsInTSFile(methodsTS);
+    writeDynamicLoadMethods(getMethodsList(methodsSchema));
     }
 
