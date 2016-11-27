@@ -135,11 +135,30 @@ function toDict(array, field)
     return newDict;
     }
 
+function removeParamsDescription(params)
+    {
+    if(!params) { return; }
+    for(var param of params)
+        {  
+        delete param.description;
+        }
+    }
+
 function convertToDynamicCheck(methods)
     {
     for(var method of methods)
         {
-        method.parameters = method.parameters ? toDict(method.parameters, "name") : {};
+        delete method.description;
+        delete method.errors;
+        delete method.responses;
+        
+        if (!method.parameters)
+            {
+            method.parameters = {};
+            continue;
+            }
+        removeParamsDescription(method.parameters);
+        method.parameters = toDict(method.parameters, "name");
         }
     return JSON.stringify(methods);
     }
