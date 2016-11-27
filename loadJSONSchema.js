@@ -109,6 +109,12 @@ function writeDynamicLoadMethods(methods)
     replaceInFile("add_methods.jstempl", "add_methods.js", "/*METHODS_LIST*/", methods);
     }
 
+function writeLoadSafeMethods(methods)
+    {
+    replaceInFile("add_safe_methods.jstempl", "add_safe_methods.js", "/*METHODS_JSON*/", methods);
+    }
+
+
 function getMethodsList(methods)
     {
     var allMethods = [];
@@ -119,6 +125,24 @@ function getMethodsList(methods)
     return allMethods.join(", ");
     }
 
+function toDict(array, field)
+    {
+    var newDict = {};
+    for(var item of array)
+        {  
+        newDict[item[field]] = item;
+        }
+    return newDict;
+    }
+
+function convertToDynamicCheck(methods)
+    {
+    for(var method of methods)
+        {
+        method.parameters = method.parameters ? toDict(method.parameters, "name") : {};
+        }
+    return JSON.stringify(methods);
+    }
 function generateTypescript(files)
     {
     console.log("all loaded");
@@ -131,5 +155,6 @@ function generateTypescript(files)
     var methodsTS = generateAllMethods(methodsSchema);
     writeMethodsInTSFile(methodsTS);
     writeDynamicLoadMethods(getMethodsList(methodsSchema));
+    writeLoadSafeMethods(convertToDynamicCheck(methodsSchema));
     }
 

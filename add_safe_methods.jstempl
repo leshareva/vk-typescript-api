@@ -1,0 +1,41 @@
+var VK = {};
+
+var methods = /*METHODS_JSON*/;
+
+function checkParam(param, defines)
+    {
+    
+    }
+
+function checkParams(params, method)
+    {
+    for(var param in params)
+        {
+        if(!method.parameters[param])
+            {
+            throw "Not found parameter ["+param+"] in method ["+method.name+"]";
+            }
+        checkParam(params[param], method.parameters[param])
+        }
+    }
+
+for(var method of methods)
+    {
+    VK[method.name.replace(".", "_")] = function(method)
+        {
+        return function(params, callback)
+            {
+            checkParams(params, method);
+            //VK.api.apply(method.name, params, callback);
+            }
+        }(method);
+    }
+
+
+VK.friends_add({user_id: 12, text: "", follow: 0});
+VK.friends_add({user_id: 12, text: "", follow: 0, haha: 4});
+VK.friends_add({user_id: 12, text: 2, follow: 0});
+VK.friends_add({text: "", follow: 0});
+
+
+
