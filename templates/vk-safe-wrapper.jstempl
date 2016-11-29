@@ -1,7 +1,3 @@
-if(!VK)
-    {
-    var VK = {};
-    }
     
 var methods = /*METHODS_JSON*/;
 
@@ -73,13 +69,7 @@ function checkParams(params, method)
         checkParam(params[param], method.parameters[param])
         }
     }
-if(!VK.api) // TEST
-    {
-    VK.api = function(method)
-        {
-        console.log("vkapi call ", method);
-        }
-    }
+
 function initMethods()
     {
     var VKAPI = VK.api;
@@ -89,8 +79,28 @@ function initMethods()
         VKAPI(arguments);
         }
     }
-initMethods();
-VK.api("friends.add", {user_id: 12, text: "", follow: 0});
-VK.api("friends.add", {user_id: 12, text: "", follow: 0, haha: 4});
-VK.api("friends.add", {user_id: 12, text: 3, follow: 0});
 
+var globalscope = function()
+    {
+    try { if(window) { return window; } }
+    catch(e) { return global; }
+    return window;
+    }();
+
+if(!globalscope.VK) // TEST
+    {
+    console.warn("WARNING! You should include vk-safe-wrapper after xd_connection.js!");
+    globalscope.VK = {};
+    VK.api = function(method)
+        {
+        console.log("vkapi call ", method);
+        }
+    initMethods();
+    VK.api("friends.add", {user_id: 12, text: "", follow: 0}); // OK
+    VK.api("friends.add", {user_id: 12, text: "", follow: 0, haha: 4}); // throw not found haha
+    VK.api("friends.add", {user_id: 12, text: 3, follow: 0}); // throw text: expected string
+    }
+else
+    {
+    initMethods();
+    }

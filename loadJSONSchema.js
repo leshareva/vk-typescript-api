@@ -99,19 +99,25 @@ function replaceInFile(filein, fileout, pointer, replaceData)
     fs.writeFileSync(fileout, generated);
     }
 
+var templ_folder = "templates";
+var gen_filder = "generated";
+
 function writeMethodsInTSFile(methods)
     {
-    replaceInFile("vk.d.tstempl", "vk.d.ts", "/*ALL_METHODS*/", methods);
+    replaceInFile(templ_folder+"/vk.d.tstempl",
+                  gen_filder  +"/vk.d.ts", "/*ALL_METHODS*/", methods);
     }
 
 function writeDynamicLoadMethods(methods)
     {
-    replaceInFile("add_methods.jstempl", "add_methods.js", "/*METHODS_LIST*/", methods);
+    replaceInFile(templ_folder+"/vk-type-methods.jstempl",
+                  gen_filder  +"/vk-type-methods.js", "/*METHODS_LIST*/", methods);
     }
 
 function writeLoadSafeMethods(methods)
     {
-    replaceInFile("add_safe_methods.jstempl", "add_safe_methods.js", "/*METHODS_JSON*/", methods);
+    replaceInFile(templ_folder+"/vk-safe-wrapper.jstempl",
+                  gen_filder  +"/vk-safe-wrapper.js", "/*METHODS_JSON*/", methods);
     }
 
 
