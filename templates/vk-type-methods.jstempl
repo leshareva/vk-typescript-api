@@ -6,6 +6,6 @@ for(var method of methods)
 {
 VK[method] = function(params, callback)
   {
-  VK.api.apply(method.replace("_", "."), params, callback);
+  VK.api.apply(method.replace(".", "_"), params, callback);
   }
 }
