@@ -73,10 +73,10 @@ function checkParams(params, method)
 function initMethods()
     {
     var VKAPI = VK.api;
-    VK.api = function(method, params)
+    VK.api = function(method, params, callback)
         {
-        checkParams(params, methods[method])
-        VKAPI(arguments);
+        checkParams(params, methods[method]);
+        return VKAPI.apply(VK, arguments);
         }
     }
 
@@ -91,9 +91,10 @@ if(!globalscope.VK) // TEST
     {
     console.warn("WARNING! You should include vk-safe-wrapper after xd_connection.js!");
     globalscope.VK = {};
-    VK.api = function(method)
+    VK.api = function(method, params, callback)
         {
-        console.log("vkapi call ", method);
+        console.log("vkapi call", method);
+        console.dir(params);
         }
     initMethods();
     VK.api("friends.add", {user_id: 12, text: "", follow: 0}); // OK
