@@ -60,6 +60,10 @@ function checkParam(param, defines)
 
 function checkParams(params, method)
     {
+    if(!params || Object.prototype.toString.call(params) === "[object Function]")
+        {
+        params = {};
+        }
     for(var param in params)
         {
         if(!method.parameters[param])
@@ -68,12 +72,13 @@ function checkParams(params, method)
             }
         checkParam(params[param], method.parameters[param])
         }
+    // TODO check all required
     }
 
 function initMethods()
     {
     var VKAPI = VK.api;
-    VK.api = function(method, params, callback)
+    VK.api = function(method, params)
         {
         checkParams(params, methods[method]);
         return VKAPI.apply(VK, arguments);
