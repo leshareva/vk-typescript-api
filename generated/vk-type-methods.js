@@ -4,8 +4,11 @@ var methods = ["users.get", "users.search", "users.isAppUser", "users.getSubscri
 
 for(var method of methods)
 {
-VK[method] = function(params, callback)
-  {
-  VK.api.apply(method.replace(".", "_"), params, callback);
-  }
+VK[method.replace(".", "_")] = function(method)
+    {
+    return function(params, callback)
+      {
+      VK.api.apply(method, params, callback);
+      }
+    }(method);
 }
