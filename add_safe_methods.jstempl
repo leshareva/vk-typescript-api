@@ -1,5 +1,8 @@
-var VK = {};
-
+if(!VK)
+    {
+    var VK = {};
+    }
+    
 var methods = /*METHODS_JSON*/;
 
 function checkRanges(param, defines)
@@ -70,24 +73,24 @@ function checkParams(params, method)
         checkParam(params[param], method.parameters[param])
         }
     }
-
-for(var method of methods)
+if(!VK.api) // TEST
     {
-    VK[method.name.replace(".", "_")] = function(method)
+    VK.api = function(method)
         {
-        return function(params, callback)
-            {
-            checkParams(params, method);
-            //VK.api.apply(method.name, params, callback);
-            }
-        }(method);
+        console.log("vkapi call ", method);
+        }
     }
-
-
-VK.friends_add({user_id: 12, text: "", follow: 0});
-VK.friends_add({user_id: 12, text: "", follow: 0, haha: 4});
-VK.friends_add({user_id: 12, text: 2, follow: 0});
-VK.friends_add({text: "", follow: 0});
-
-
+function initMethods()
+    {
+    var VKAPI = VK.api;
+    VK.api = function(method, params)
+        {
+        checkParams(params, methods[method])
+        VKAPI(arguments);
+        }
+    }
+initMethods();
+VK.api("friends.add", {user_id: 12, text: "", follow: 0});
+VK.api("friends.add", {user_id: 12, text: "", follow: 0, haha: 4});
+VK.api("friends.add", {user_id: 12, text: 3, follow: 0});
 

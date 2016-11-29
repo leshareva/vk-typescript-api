@@ -160,6 +160,7 @@ function convertToDynamicCheck(methods)
         removeParamsDescription(method.parameters);
         method.parameters = toDict(method.parameters, "name");
         }
+    methods = toDict(methods, "name");
     return JSON.stringify(methods);
     }
 function generateTypescript(files)
